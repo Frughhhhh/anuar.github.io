@@ -6,7 +6,8 @@
     <meta name="description" content="Википедия о машинах">
     <title>Автомобильная Википедия</title>
     <link rel="stylesheet" type="text/css" href="css.css">
-    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
 </head>
 <body bgcolor="#808080" text="#000000">
 
@@ -41,13 +42,15 @@
         <button id="redirectButton">Перейти на BMW</button>
         <button id="resizeTable">Увеличить таблицу</button>
         <button id="resetTable">Сбросить размеры таблицы</button>
-        <button id="changeColorButton">Изменить цвет</button>
+        <button id="addRowButton">Добавить строку</button>
 
         <br><br>
         <br><br><br>
 
         <section>
-            <h2 align="center">Таблица характеристик популярных машин</h2>
+            <h2 id="header">Таблица характеристик популярных машин</h2>
+            <button id="colorButton">Изменить цвет заголовка</button>
+            <button id="changeTitleButton">Изменить заголовок</button>
             <table id="resizableTable" v-show="showTable" border="1" align="center" width="90%" cellpadding="5" cellspacing="0">
                 <caption>Характеристики автомобилей</caption>
                 <thead>
@@ -182,20 +185,24 @@
         }).text("Автомобильная Википедия");
     });
 
-    (function($) {
-    $.fn.changeColor = function(color) {
-        return this.css("color", color); 
-    };
-    })(jQuery);
+    (function ($) {
+            var defaults = { color: 'green' };
+            var options;
+            $.fn.myPlugin = function (params) {
+                options = $.extend({}, defaults, options, params);
 
-    $(document).ready(function() {
-       $("#changeColorButton").click(function() {
-        $("p").changeColor("red"); 
-    });
-});
+                return this.each(function () {
+                    $(this).css('color', options.color);
+                });
+            };
+        })(jQuery);
 
+        $(document).ready(function () {
+            $("#colorButton").click(function () {
+                $("#header").mySimplePlugin({ color: 'blue' });
+            });
+        });
 
- 
     $(document).ready(function () {
             $("#resizeTable").click(function () {
                 $("#resizableTable").css({
@@ -211,6 +218,54 @@
                 });
             });
         });
+
+    function changeTitleWithJQuery(newTitle) {
+    $("#header").text(newTitle);
+    }
+
+    $(document).ready(function () {
+        $("#changeTitleButton").click(function () {
+            changeTitleWithJQuery("Новый заголовок");
+        });
+    });
+
+    (function($) {
+    $.fn.addRowToTable = function(car) {
+        const tableBody = this.find("tbody");
+
+        const newRow = $("<tr>");
+
+        const cells = [
+            car.name,   
+            car.power,   
+            car.fuelType,
+            car.acceleration, 
+            car.topSpeed  
+        ];
+
+        cells.forEach(function(cellText) {
+            $("<td>").text(cellText).appendTo(newRow);
+        });
+
+        tableBody.append(newRow);
+    };
+    })(jQuery);
+
+    $(document).ready(function() {
+    $("#addRowButton").click(function() {
+        const car = {
+            name: "Lexus RX 500h",
+            power: 371,
+            fuelType: "Гибрид",
+            acceleration: "5.9 сек",
+            topSpeed: "210 км/ч"
+        };
+
+        $("#resizableTable").addRowToTable(car);
+    });
+});
+
+
 
 </script>
 
